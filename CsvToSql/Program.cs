@@ -9,6 +9,6 @@ var app = builder.Build();
 
 app.MapControllerRoute(
             name: "def",
-            pattern: "{controller=Home}/{action=UploadCsv}/{id?}");
+            pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
