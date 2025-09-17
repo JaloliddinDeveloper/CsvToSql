@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36408.4 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvToSql", "CsvToSql\CsvToSql.csproj", "{15568AEE-8A03-436C-BD17-0A5A40CF4549}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBridge", "CsvToSql\DataBridge.csproj", "{15568AEE-8A03-436C-BD17-0A5A40CF4549}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

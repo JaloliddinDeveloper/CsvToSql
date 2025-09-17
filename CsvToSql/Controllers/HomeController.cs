@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace CsvToSql.Controllers
+namespace DataBridge.Controllers
 {
     public class HomeController : Controller
     {
