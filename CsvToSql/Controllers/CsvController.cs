@@ -8,7 +8,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CsvToSql.Controllers
+namespace DataBridge.Controllers
 {
     public class CsvController:Controller
     {
