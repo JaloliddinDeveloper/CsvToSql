@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Xush kelibsiz</title>
+    <title>Data Brirge</title>
 
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -120,8 +120,6 @@
 </head>
 <body>
 
-    <!-- Sidebar Buttons -->
-    <!-- Yon panel tugmalar -->
     <div class="sidebar">
         <button class="btn-side btn-excel" onclick="location.href='@Url.Action("UploadExcel", "Excel")'">
             <i class="bi bi-file-earmark-excel"></i> Excel To SQL
@@ -130,10 +128,12 @@
         <button class="btn-side btn-csv" onclick="location.href='@Url.Action("UploadCsv", "Csv")'">
             <i class="bi bi-filetype-csv"></i> CSV To SQL
         </button>
+
+        <button class="btn-side btn-excel" onclick="location.href='@Url.Action("Index", "Export")'">
+            <i class="bi bi-database"></i> SQL To Excel
+        </button>
     </div>
 
-
-    <!-- Hero Section -->
     <section class="hero">
         <h1>Xush kelibsiz!</h1>
         <p>Bu platformada siz Excel yoki CSV fayllaringizni SQL bazaga yuklashingiz mumkin.</p>

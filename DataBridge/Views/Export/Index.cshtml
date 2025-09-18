@@ -1,0 +1,252 @@
+﻿@model DataBridge.Models.Excels.ExportRequest
+@{
+    ViewData["Title"] = "📊 SQL Export to Excel";
+}
+
+<div class="export-page">
+    <div class="form-wrapper">
+        <div class="form-card">
+            <h2 class="title"><i class="bi bi-file-earmark-excel"></i> SQL Data Export</h2>
+
+            <form asp-action="Index" method="post" onsubmit="showProgress()">
+                <div class="mb-3">
+                    <label class="form-label">🔗 Database Connection String</label>
+                    <input asp-for="ConnectionString" class="form-control" placeholder="Server=...;Database=...;User Id=...;Password=..." />
+                    <span asp-validation-for="ConnectionString" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">📝 SQL Query</label>
+                    <textarea asp-for="SqlQuery" class="form-control" rows="5" placeholder="SELECT * FROM Students"></textarea>
+                    <span asp-validation-for="SqlQuery" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">📂 File Name</label>
+                    <input asp-for="FileName" class="form-control" placeholder="MyExport" />
+                    <span asp-validation-for="FileName" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-download"></i> Export to Excel
+                </button>
+            </form>
+
+            <div class="progress-section">
+                <label class="fw-bold">⏳ Export Progress</label>
+                <div class="progress-bar">
+                    <div id="progressBar" class="progress-fill">0%</div>
+                </div>
+            </div>
+
+            <div class="queries-section">
+                <h5><i class="bi bi-collection"></i> Saved Queries</h5>
+                <ul id="savedQueries" class="query-list"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        async function loadSavedQueries() {
+            const res = await axios.get('/Export/GetSavedQueries');
+            const list = document.getElementById('savedQueries');
+            list.innerHTML = '';
+            res.data.forEach(q => {
+                const li = document.createElement('li');
+                li.className = "query-item";
+                li.innerHTML = `
+                    <span>
+                        <strong>${q.name}</strong>
+                        <small>(${q.category ?? "General"})</small>
+                    </span>
+                    <div class="query-actions">
+                        <button class="btn-use" onclick="useQuery('${q.sql.replace(/'/g, "\\'")}')">
+                            <i class="bi bi-play"></i>
+                        </button>
+                        <button class="btn-delete" onclick="deleteQuery('${q.name}','${q.category ?? ""}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>`;
+                list.appendChild(li);
+            });
+        }
+
+        function useQuery(sql) {
+            document.querySelector('[name="SqlQuery"]').value = sql;
+        }
+
+        async function deleteQuery(name, category) {
+            await axios.post('/Export/DeleteQuery', { name, category });
+            loadSavedQueries();
+        }
+
+        function showProgress() {
+            const interval = setInterval(async () => {
+                const res = await axios.get('/Export/GetProgress');
+                const { rows, done, total } = res.data;
+                const percent = total > 0 ? Math.floor((rows / total) * 100) : 0;
+                const bar = document.getElementById('progressBar');
+                bar.style.width = percent + '%';
+                bar.innerText = percent + '%';
+
+                if (done) {
+                    clearInterval(interval);
+                    bar.classList.add('done');
+                    bar.innerText = "✅ Done";
+                }
+            }, 1000);
+        }
+
+        loadSavedQueries();
+    </script>
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .export-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+    }
+
+    .form-wrapper {
+        width: 100%;
+        max-width: 850px;
+    }
+
+    .form-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 40px;
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .title {
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        padding: 12px;
+        border: none;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-submit {
+        background: #28a745;
+        border: none;
+        border-radius: 12px;
+        color: #fff;
+        font-size: 18px;
+        font-weight: 600;
+        padding: 12px;
+        width: 100%;
+        margin-top: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-submit:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+    .progress-section {
+        margin-top: 30px;
+    }
+
+    .progress-bar {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        overflow: hidden;
+        height: 28px;
+        margin-top: 5px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #00c853, #b2ff59);
+        width: 0%;
+        color: #000;
+        font-weight: bold;
+        text-align: center;
+        line-height: 28px;
+        transition: width 0.4s ease;
+    }
+
+        .progress-fill.done {
+            background: linear-gradient(90deg, #2196f3, #00bcd4);
+            color: #fff;
+        }
+
+    .queries-section {
+        margin-top: 35px;
+    }
+
+    .query-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .query-item {
+        background: rgba(255, 255, 255, 0.15);
+        margin-bottom: 10px;
+        padding: 12px 15px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+        .query-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(5px);
+        }
+
+    .query-actions button {
+        border: none;
+        padding: 6px 10px;
+        margin-left: 5px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-use {
+        background: #007bff;
+        color: #fff;
+    }
+
+        .btn-use:hover {
+            background: #0056b3;
+        }
+
+    .btn-delete {
+        background: #dc3545;
+        color: #fff;
+    }
+
+        .btn-delete:hover {
+            background: #b02a37;
+        }
+</style>
+
